@@ -1,0 +1,9 @@
+[submodule "CodeArenaAuthentification"]
+	path = CodeArenaAuthentification
+	url = https://github.com/ellieene/CodeArenaAuthentication
+[submodule "CodeArenaProfile"]
+	path = CodeArenaProfile
+	url = https://github.com/ellieene/CodeArenaProfile
+[submodule "CodeArenaBff"]
+	path = CodeArenaBff
+	url = https://github.com/ellieene/CodeArenaBff
