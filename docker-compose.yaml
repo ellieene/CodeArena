@@ -1,0 +1,96 @@
+version: '3.9'
+
+services:
+  # Главная база для auth и profile
+  postgres:
+    image: postgres:14
+    container_name: codearena-db
+    restart: always
+    environment:
+      POSTGRES_DB: code-arena-db
+      POSTGRES_USER: code_arena_user
+      POSTGRES_PASSWORD: code_arena_password
+    ports:
+      - "5432:5432"
+    networks:
+      - codearena
+
+  # Отдельная база для article
+  article-db:
+    image: postgres:14
+    container_name: article-db
+    restart: always
+    environment:
+      POSTGRES_DB: article_db
+      POSTGRES_USER: article_adm_123
+      POSTGRES_PASSWORD: fhnbrkt159753.,?
+    ports:
+      - "5433:5432"
+    networks:
+      - codearena
+
+  # Сервис аутентификации
+  codearena-auth:
+    build:
+      context: ./CodeArenaAuthentification
+    container_name: codearena-auth
+    depends_on:
+      - postgres
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/code-arena-db  # Изменено с codearena_db на postgres
+      SPRING_DATASOURCE_USERNAME: code_arena_user
+      SPRING_DATASOURCE_PASSWORD: code_arena_password
+    ports:
+      - "8081:8081"
+    networks:
+      - codearena
+
+  # Сервис профиля
+  codearena-profile:
+    build:
+      context: ./CodeArenaProfile
+    container_name: codearena-profile
+    depends_on:
+      - postgres
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/code-arena-db  # Изменено с codearena_db на postgres
+      SPRING_DATASOURCE_USERNAME: code_arena_user
+      SPRING_DATASOURCE_PASSWORD: code_arena_password
+    ports:
+      - "8082:8082"
+    networks:
+      - codearena
+
+  # Сервис статей
+  codearena-article:
+    build:
+      context: ./CodeArenaArticle
+    container_name: codearena-article
+    depends_on:
+      - article-db  # Изменено с article_db на article-db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://article-db:5432/article_db  # Изменено с article_db на article-db
+      SPRING_DATASOURCE_USERNAME: article_adm_123
+      SPRING_DATASOURCE_PASSWORD: fhnbrkt159753.,?
+    ports:
+      - "8083:8083"
+    networks:
+      - codearena
+
+  # BFF / Gateway
+  codearena-bff:
+    build:
+      context: ./CodeArenaBff
+    container_name: codearena-bff
+    depends_on:
+      - codearena-auth
+      - codearena-profile
+      - codearena-article
+    ports:
+      - "8080:8080"
+    networks:
+      - codearena
+
+networks:
+  codearena:
+    driver: bridge

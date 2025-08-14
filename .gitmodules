@@ -7,3 +7,6 @@
 [submodule "CodeArenaBff"]
 	path = CodeArenaBff
 	url = https://github.com/ellieene/CodeArenaBff
+[submodule "CodeArenaArticle"]
+	path = CodeArenaArticle
+	url = https://github.com/ellieene/CodeArenaArticle
